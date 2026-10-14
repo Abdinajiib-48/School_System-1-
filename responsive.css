@@ -1,0 +1,233 @@
+/* ============================================================
+   School System - shared responsive rules
+   Loaded by every dashboard (through each sidebar.php) and by
+   the printable pages.
+
+   Breakpoints
+     > 1024px  desktop        full sidebar
+     <= 1024px small laptop / tablet landscape - narrower sidebar
+     <= 768px  tablet / phone - sidebar slides in, everything stacks
+     <= 480px  small phone    - tighter spacing
+   ============================================================ */
+
+/* ---------- 1. Never allow the page to scroll sideways ---------- */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+* { min-width: 0; }               /* lets flex/grid children shrink */
+
+img, video, canvas, svg { max-width: 100%; height: auto; }
+
+/* ---------- 2. Tables: scroll inside their card ---------- */
+.table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+}
+/* a soft edge so it is obvious the table can be swiped */
+.table-scroll.is-scrollable {
+    background:
+        linear-gradient(to right, #fff 30%, rgba(255,255,255,0)) left center / 28px 100% no-repeat,
+        linear-gradient(to left,  #fff 30%, rgba(255,255,255,0)) right center / 28px 100% no-repeat,
+        linear-gradient(to right, rgba(0,0,0,.10), rgba(0,0,0,0)) left center / 12px 100% no-repeat,
+        linear-gradient(to left,  rgba(0,0,0,.10), rgba(0,0,0,0)) right center / 12px 100% no-repeat;
+    background-attachment: local, local, scroll, scroll;
+}
+.table-scroll > table { margin-top: 0; }
+
+/* ---------- 2b. Action buttons inside tables ----------
+   Edit / Delete are <a> tags, which are INLINE. An inline element
+   with vertical padding does not grow its line box, so in a narrow
+   Actions column the buttons wrap and their padding overlaps the
+   row above - that is the overlap you saw. inline-flex fixes it. */
+.view-btn, .edit-btn, .delete-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    vertical-align: middle;
+    white-space: nowrap;
+    box-sizing: border-box;
+    /* VIEW is a <button> while EDIT/DELETE are <a> - force one size */
+    min-height: 30px;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    border-radius: 5px;
+    margin: 2px 5px 2px 0 !important;   /* even spacing, no overlap */
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+/* keep the three buttons on one line; the table scrolls if needed */
+td.action-buttons { white-space: nowrap; }
+
+/* ---------- 3. Sidebar can always be scrolled ---------- */
+.sidebar { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+/* short screens: the logout block must not sit on top of the menu */
+@media (max-height: 760px) {
+    .sidebar-footer {
+        position: static !important;
+        margin-top: 15px;
+    }
+}
+
+/* Slide the drawer by transform, not by a fixed left offset.
+   The old pages used left:-280px, which leaves a sliver showing
+   whenever the sidebar is a different width. */
+@media (max-width: 768px) {
+    .sidebar {
+        left: 0 !important;
+        transform: translateX(-100%);
+        transition: transform .3s ease !important;
+    }
+    .sidebar.active { transform: translateX(0); }
+}
+
+/* dim the page behind the sidebar on small screens */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 999;
+}
+.sidebar-overlay.show { display: block; }
+
+/* ---------- 4. Small laptop / tablet landscape ---------- */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .sidebar { width: 225px; }
+    .main-content { margin-left: 225px; }
+    .sidebar-header h2 { font-size: 18px; }
+    .sidebar-menu a { padding: 10px 12px; gap: 9px; font-size: 14px; }
+    .page-content { padding: 20px; }
+    .top-bar { padding: 12px 20px; }
+}
+
+/* ---------- 5. Tablet and phone ---------- */
+@media (max-width: 768px) {
+
+    /* everything that is a multi-column grid becomes one column */
+    .form-row,
+    .form-row-3,
+    .two-col,
+    .stats-grid,
+    .stats-container,
+    .mini-stats,
+    .totals,
+    .pl-grid,
+    .quick,
+    .action-grid,
+    .method-grid,
+    .summary-grid,
+    .subject-checks,
+    .teacher-checks {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    /* two small cards side by side still read fine on a phone */
+    .stats-container,
+    .mini-stats,
+    .method-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+    }
+
+    .page-content { padding: 15px !important; }
+    .card,
+    .results-section,
+    .class-block,
+    .ann,
+    .ann-head { padding: 18px !important; border-radius: 12px !important; }
+
+    .card h2,
+    .section-title { font-size: 17px !important; }
+
+    /* top bar: let the child switcher wrap under the name */
+    .top-bar {
+        padding: 10px 14px !important;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .user-name { font-size: 14px; }
+
+    /* forms are easier to tap */
+    input, select, textarea {
+        font-size: 16px !important;       /* stops iPhone zooming in */
+        padding: 12px !important;
+    }
+    button, .btn {
+        min-height: 44px;
+        padding: 11px 18px !important;
+    }
+    .btn-sm { min-height: 34px; padding: 6px 12px !important; }
+
+    /* button rows wrap instead of overflowing */
+    .finance-tabs,
+    .filter-bar,
+    .class-selector,
+    .period-bar,
+    .day-bar,
+    .search-row,
+    .filter-row,
+    .child-switch,
+    .quick-names { flex-wrap: wrap !important; }
+
+    .search-row input,
+    .filter-row > div { min-width: 100% !important; }
+
+    /* tables stay readable while scrolling sideways */
+    table { font-size: 13px; }
+    th, td { padding: 8px 9px !important; white-space: nowrap; }
+    /* except columns that hold sentences */
+    td.wrap, th.wrap, .ann .body, .howto, .privacy { white-space: normal; }
+
+    /* timetable: keep the time column visible while scrolling */
+    table.tt { min-width: 620px; }
+    table.tt .slot { width: 96px; font-size: 12px; }
+
+    /* printable documents on a phone */
+    .receipt, .slip, .inv, .st { padding: 20px !important; }
+}
+
+/* ---------- 6. Small phones ---------- */
+@media (max-width: 480px) {
+    .page-content { padding: 11px !important; }
+    .card,
+    .results-section { padding: 14px !important; }
+
+    .sidebar { width: 84%; max-width: 300px; }
+
+    .stat-number, .stat-value, .tot .val, .mini .val, .stat .v { font-size: 23px !important; }
+    .welcome-card h1, .welcome h1, .welcome-card h2 { font-size: 19px !important; }
+
+    /* the main action button fills the row so it is easy to hit */
+    form > button[type="submit"] { width: 100%; }
+
+    .finance-tab, .f-btn, .class-btn, .period-btn { font-size: 13px; padding: 8px 13px !important; }
+
+    .chips .chip, .badge { font-size: 11px; }
+
+    table { font-size: 12px; }
+    th, td { padding: 7px !important; }
+
+    /* stack the two boxes on receipts/statements */
+    .who { flex-direction: column !important; }
+    .sig, .sign-row { flex-direction: column; gap: 22px; }
+    .sig div, .sign-row div { width: 100% !important; }
+
+    .totals { width: 100% !important; }
+}
+
+/* ---------- 7. Printing ---------- */
+@media print {
+    .sidebar, .sidebar-overlay, .top-bar, .menu-toggle, .no-print { display: none !important; }
+    .main-content { margin-left: 0 !important; }
+    .page-content { padding: 0 !important; }
+    .card, .results-section { box-shadow: none !important; page-break-inside: avoid; }
+    .table-scroll { overflow: visible !important; background: none !important; }
+    table { font-size: 11px; }
+    th, td { white-space: normal !important; }
+}
